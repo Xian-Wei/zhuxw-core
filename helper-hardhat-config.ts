@@ -1,0 +1,1 @@
+export const INITIAL_SUPPLY = 1000000;
