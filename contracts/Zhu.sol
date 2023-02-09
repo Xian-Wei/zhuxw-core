@@ -3,6 +3,9 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
+/* Errors */
+error Zhu__LockTimeNotReached();
+
 contract Zhu is ERC20 {
     mapping(address => uint16) public faucetUseCount;
     mapping(address => uint256) public lockTime;
@@ -12,18 +15,20 @@ contract Zhu is ERC20 {
     }
 
     function faucet() public {
-        require(block.timestamp > lockTime[msg.sender]);
+        if (block.timestamp > lockTime[msg.sender]) {
+            revert Zhu__LockTimeNotReached();
+        }
 
         _mint(msg.sender, 10000);
         faucetUseCount[msg.sender] = faucetUseCount[msg.sender] + 1;
-        lockTime[msg.sender] = block.timestamp + 1 days;
+        lockTime[msg.sender] = block.timestamp + 5 minutes;
     }
 
-    function getUserLockTime() public view returns (uint256) {
-        return lockTime[msg.sender];
+    function getLockTimeOf(address _address) public view returns (uint256) {
+        return lockTime[_address];
     }
 
-    function getUserFaucetCount() public view returns (uint16) {
-        return faucetUseCount[msg.sender];
+    function getFaucetCountOf(address _address) public view returns (uint16) {
+        return faucetUseCount[_address];
     }
 }
