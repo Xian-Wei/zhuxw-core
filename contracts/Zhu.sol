@@ -2,6 +2,7 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "hardhat/console.sol";
 
 /* Errors */
 error Zhu__LockTimeNotReached();
@@ -22,6 +23,12 @@ contract Zhu is ERC20 {
         _mint(msg.sender, 10000);
         faucetUseCount[msg.sender] = faucetUseCount[msg.sender] + 1;
         lockTime[msg.sender] = block.timestamp + 5 minutes;
+    }
+
+    function _approve(address spender, uint256 amount) external returns (bool) {
+        bool approved = approve(spender, amount * (10**decimals()));
+
+        return approved;
     }
 
     function getLockTimeOf(address _address) public view returns (uint256) {

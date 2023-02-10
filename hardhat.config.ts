@@ -2,6 +2,7 @@ import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import "hardhat-deploy";
 import "dotenv/config";
+import "@nomiclabs/hardhat-ethers";
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const MAINNET_RPC_URL = process.env.MAINNET_RPC_URL;
