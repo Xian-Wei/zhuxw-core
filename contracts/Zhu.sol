@@ -31,6 +31,10 @@ contract Zhu is ERC20 {
         return approved;
     }
 
+    function mintTokenTo(address to, uint256 amount) external {
+        _mint(to, amount);
+    }
+
     function getLockTimeOf(address _address) public view returns (uint256) {
         return lockTime[_address];
     }
