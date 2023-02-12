@@ -1,4 +1,4 @@
 export const INITIAL_SUPPLY = 1000000;
 export const frontEndContractsFile =
-  "../zhuxw/contracts/contractAddresses.json";
-export const frontEndAbiFile = "../zhuxw/contracts/abi.json";
+  "../zhuxw/data/artifacts/contractAddresses.json";
+export const frontEndAbiFolder = "../zhuxw/data/artifacts/";
