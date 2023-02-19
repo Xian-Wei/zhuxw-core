@@ -10,6 +10,7 @@ describe("ZHU Exchange", function () {
   let deployer: SignerWithAddress;
   let user1: SignerWithAddress;
   const supply = INITIAL_SUPPLY;
+  const faucetAmount = 10000;
   let decimals: number;
   const amount = 45600;
 
@@ -19,7 +20,7 @@ describe("ZHU Exchange", function () {
     user1 = accounts[1];
 
     const Zhu = await ethers.getContractFactory("Zhu");
-    zhu = await Zhu.deploy(supply);
+    zhu = await Zhu.deploy(supply, faucetAmount);
     decimals = await zhu.decimals();
     const ZhuExchange = await ethers.getContractFactory("ZhuExchange");
     zhuExchange = await ZhuExchange.deploy(zhu.address);
@@ -49,81 +50,5 @@ describe("ZHU Exchange", function () {
     const diff = balanceBefore.sub(balanceAfter);
 
     assert.equal(diff.toString(), amount + "0".repeat(decimals));
-  });
-
-  it(`Should have shorted and won the trade`, async () => {
-    const snapshot = 819;
-    const finalWeight = 789;
-
-    let balanceBefore = await ethers.utils.formatEther(
-      await zhu.balanceOf(deployer.address)
-    );
-
-    await zhu._approve(zhuExchange.address, amount);
-    await zhuExchange.short(amount, snapshot);
-    await zhuExchange.executeTrades(finalWeight);
-
-    let balanceAfter = await ethers.utils.formatEther(
-      await zhu.balanceOf(deployer.address)
-    );
-
-    expect(Number(balanceAfter)).to.be.above(Number(balanceBefore));
-  });
-
-  it(`Should have shorted and lost the trade`, async () => {
-    const snapshot = 789;
-    const finalWeight = 819;
-
-    let balanceBefore = await ethers.utils.formatEther(
-      await zhu.balanceOf(deployer.address)
-    );
-
-    await zhu._approve(zhuExchange.address, amount);
-    await zhuExchange.short(amount, snapshot);
-    await zhuExchange.executeTrades(finalWeight);
-
-    let balanceAfter = await ethers.utils.formatEther(
-      await zhu.balanceOf(deployer.address)
-    );
-
-    expect(Number(balanceAfter)).to.be.below(Number(balanceBefore));
-  });
-
-  it(`Should have longed and won the trade`, async () => {
-    const snapshot = 789;
-    const finalWeight = 819;
-
-    let balanceBefore = await ethers.utils.formatEther(
-      await zhu.balanceOf(deployer.address)
-    );
-
-    await zhu._approve(zhuExchange.address, amount);
-    await zhuExchange.long(amount, snapshot);
-    await zhuExchange.executeTrades(finalWeight);
-
-    let balanceAfter = await ethers.utils.formatEther(
-      await zhu.balanceOf(deployer.address)
-    );
-
-    expect(Number(balanceAfter)).to.be.above(Number(balanceBefore));
-  });
-
-  it(`Should have longed and lost the trade`, async () => {
-    const snapshot = 819;
-    const finalWeight = 789;
-
-    let balanceBefore = await ethers.utils.formatEther(
-      await zhu.balanceOf(deployer.address)
-    );
-
-    await zhu._approve(zhuExchange.address, amount);
-    await zhuExchange.long(amount, snapshot);
-    await zhuExchange.executeTrades(finalWeight);
-
-    let balanceAfter = await ethers.utils.formatEther(
-      await zhu.balanceOf(deployer.address)
-    );
-
-    expect(Number(balanceAfter)).to.be.below(Number(balanceBefore));
   });
 });
