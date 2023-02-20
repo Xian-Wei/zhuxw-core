@@ -45,9 +45,26 @@ describe("ZHU Token", function () {
       ethers.utils.formatEther(await zhu.totalSupply())
     );
 
-    expect(Number(totalSupplyAfter) - Number(totalSupplyBefore)).to.equal(
-      faucetAmount
+    expect(totalSupplyAfter - totalSupplyBefore).to.equal(faucetAmount);
+  });
+
+  it("Should be able to set the faucet amount", async () => {
+    const faucetAmount = Number(await zhu.getFaucetAmount());
+    const newFaucetAmount = faucetAmount / 2;
+
+    await zhu.setFaucetAmount(newFaucetAmount);
+
+    expect(newFaucetAmount).to.equal(Number(await zhu.getFaucetAmount()));
+
+    const totalSupplyBefore = Number(
+      ethers.utils.formatEther(await zhu.totalSupply())
     );
+    await zhu.faucet();
+    const totalSupplyAfter = Number(
+      ethers.utils.formatEther(await zhu.totalSupply())
+    );
+
+    expect(totalSupplyAfter - totalSupplyBefore).to.equal(newFaucetAmount);
   });
 
   it("Shouldn't be able to use faucet consecutively", async () => {
@@ -57,5 +74,22 @@ describe("ZHU Token", function () {
       zhu,
       `Zhu__LockTimeNotReached`
     );
+  });
+
+  it("Should be able to call Minter functions with role", async () => {
+    const [addr1, addr2] = await ethers.getSigners();
+    const mintAmount = 42000;
+
+    await expect(
+      zhu.connect(addr1).mintTokenTo(addr2.address, 42000)
+    ).to.be.revertedWithCustomError(zhu, "Zhu__CallerNotGrantedPermission");
+
+    await zhu.grantMinterRole(addr1.address);
+
+    await zhu.connect(addr1).mintTokenTo(addr2.address, mintAmount);
+
+    const addr2Balance = await zhu.balanceOf(addr2.address);
+
+    expect(addr2Balance).to.equal(mintAmount);
   });
 });

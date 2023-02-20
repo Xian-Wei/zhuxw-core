@@ -28,6 +28,9 @@ contract Zhu is ERC20, AccessControl {
     }
 
     function grantMinterRole(address minter) public {
+        if (!hasRole(DEFAULT_ADMIN_ROLE, msg.sender)) {
+            revert Zhu__CallerNotGrantedPermission();
+        }
         _setupRole(MINTER_ROLE, minter);
     }
 

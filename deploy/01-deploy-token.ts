@@ -1,6 +1,6 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
-import { INITIAL_SUPPLY } from "../helper-hardhat-config";
+import { FAUCET_AMOUNT, INITIAL_SUPPLY } from "../helper-hardhat-config";
 
 const deployToken: DeployFunction = async function (
   hre: HardhatRuntimeEnvironment
@@ -11,7 +11,7 @@ const deployToken: DeployFunction = async function (
 
   const zhuToken = await deploy("Zhu", {
     from: deployer,
-    args: [INITIAL_SUPPLY],
+    args: [INITIAL_SUPPLY, FAUCET_AMOUNT],
     log: true,
   });
   log(`Zhu Token deployed at ${zhuToken.address}`);
