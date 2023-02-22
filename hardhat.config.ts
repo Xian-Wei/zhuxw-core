@@ -3,6 +3,7 @@ import "@nomicfoundation/hardhat-toolbox";
 import "hardhat-deploy";
 import "dotenv/config";
 import "@nomiclabs/hardhat-ethers";
+import "hardhat-gas-reporter";
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const MAINNET_RPC_URL = process.env.MAINNET_RPC_URL;
@@ -45,6 +46,9 @@ const config: HardhatUserConfig = {
       default: 0,
       1: 0,
     },
+  },
+  gasReporter: {
+    enabled: process.env.REPORT_GAS == "true" ? true : false,
   },
 };
 

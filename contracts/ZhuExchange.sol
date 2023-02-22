@@ -92,78 +92,37 @@ contract ZhuExchange {
     function executeTrades(uint256 finalWeight) public {
         for (uint256 i = 0; i < s_users.length; i++) {
             for (uint256 j = 0; j < s_positions[s_users[i]].length; j++) {
-                int256 change = int256(finalWeight) -
-                    int16(s_positions[msg.sender][0].weightSnapshot);
-
-                // Multiply by 10000 to get 2 floating points
-                int256 percentChange = (change * 10000) /
-                    int16(s_positions[msg.sender][0].weightSnapshot);
-
-                // Multiply by 10000 to match the percentage change
-                int256 multipliedAmount = int256(
-                    s_positions[s_users[i]][j].amount * 10000
+                int256 amount = int256(s_positions[s_users[i]][j].amount);
+                int256 weightSnapshot = int16(
+                    s_positions[s_users[i]][j].weightSnapshot
+                );
+                int256 percentageDifference = int256(
+                    ((int256(finalWeight) - weightSnapshot) * 10000) /
+                        weightSnapshot
                 );
 
-                int256 gainLossAmount = int256(
-                    ((multipliedAmount * percentChange) / 10000)
-                );
+                int256 gainLoss = ((amount) * percentageDifference) / 1000;
 
-                ///*
-                // Long
                 if (
-                    s_positions[s_users[i]][j].positionType == PositionType.LONG
-                ) {
-                    // Loss
-                    if (percentChange < 0) {
-                        uint256 longResult = uint256(
-                            (multipliedAmount + gainLossAmount) / 10000
-                        );
-
-                        i_zhuContract.mintTokenTo(
-                            s_users[i],
-                            uint256(longResult * (10**18))
-                        );
-                    }
-                    // Gain
-                    else if (percentChange > 0) {
-                        uint256 longResult = uint256(
-                            (multipliedAmount + gainLossAmount) / 10000
-                        );
-
-                        i_zhuContract.mintTokenTo(
-                            s_users[i],
-                            longResult * (10**18)
-                        );
-                    }
-                }
-                // Short
-                else if (
                     s_positions[s_users[i]][j].positionType ==
                     PositionType.SHORT
                 ) {
-                    // Gain
-                    if (percentChange < 0) {
-                        uint256 shortResult = uint256(
-                            (multipliedAmount - gainLossAmount) / 10000
-                        );
-
+                    if (gainLoss < amount) {
                         i_zhuContract.mintTokenTo(
                             s_users[i],
-                            shortResult * (10**18)
+                            uint256(amount - gainLoss) * (10**18)
                         );
                     }
-                    // Loss
-                    else if (percentChange > 0) {
-                        uint256 shortResult = uint256(
-                            (multipliedAmount - gainLossAmount) / 10000
-                        );
-
+                } else if (
+                    s_positions[s_users[i]][j].positionType == PositionType.LONG
+                ) {
+                    if (-gainLoss < amount) {
                         i_zhuContract.mintTokenTo(
                             s_users[i],
-                            uint256(shortResult * (10**18))
+                            uint256(amount + gainLoss) * (10**18)
                         );
                     }
-                } //*/
+                }
             }
         }
     }

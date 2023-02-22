@@ -11,8 +11,7 @@ describe("ZHU Exchange", function () {
   let user1: SignerWithAddress;
   const supply = INITIAL_SUPPLY;
   const faucetAmount = 10000;
-  let decimals: number;
-  const amount = 45600;
+  const amount = 20000;
 
   beforeEach(async () => {
     const accounts = await ethers.getSigners();
@@ -21,34 +20,105 @@ describe("ZHU Exchange", function () {
 
     const Zhu = await ethers.getContractFactory("Zhu");
     zhu = await Zhu.deploy(supply, faucetAmount);
-    decimals = await zhu.decimals();
     const ZhuExchange = await ethers.getContractFactory("ZhuExchange");
     zhuExchange = await ZhuExchange.deploy(zhu.address);
+
+    await zhu.grantMinterRole(zhuExchange.address);
   });
 
-  it(`Should have shorted and sent ${amount} ZHU to contract`, async () => {
-    let balanceBefore = await zhu.balanceOf(deployer.address);
+  it(`Should have shorted and won`, async () => {
+    let balanceBefore = ethers.utils.formatEther(
+      await zhu.balanceOf(deployer.address)
+    );
 
     await zhu._approve(zhuExchange.address, amount);
-    await zhuExchange.short(amount, 500);
+    await zhuExchange.short(amount, 819);
+    await zhuExchange.executeTrades(789);
 
-    let balanceAfter = await zhu.balanceOf(deployer.address);
+    let balanceAfter = ethers.utils.formatEther(
+      await zhu.balanceOf(deployer.address)
+    );
 
-    const diff = balanceBefore.sub(balanceAfter);
-
-    assert.equal(diff.toString(), amount + "0".repeat(decimals));
+    assert.isAbove(Number(balanceAfter), Number(balanceBefore));
   });
 
-  it(`Should have longed and sent ${amount} ZHU to contract`, async () => {
-    let balanceBefore = await zhu.balanceOf(deployer.address);
+  it(`Should have shorted and lost`, async () => {
+    let balanceBefore = ethers.utils.formatEther(
+      await zhu.balanceOf(deployer.address)
+    );
 
     await zhu._approve(zhuExchange.address, amount);
-    await zhuExchange.long(amount, 500);
+    await zhuExchange.short(amount, 789);
+    await zhuExchange.executeTrades(819);
 
-    let balanceAfter = await zhu.balanceOf(deployer.address);
+    let balanceAfter = ethers.utils.formatEther(
+      await zhu.balanceOf(deployer.address)
+    );
 
-    const diff = balanceBefore.sub(balanceAfter);
+    assert.isBelow(Number(balanceAfter), Number(balanceBefore));
+  });
 
-    assert.equal(diff.toString(), amount + "0".repeat(decimals));
+  it(`Should have shorted and lost everything`, async () => {
+    let balanceBefore = ethers.utils.formatEther(
+      await zhu.balanceOf(deployer.address)
+    );
+
+    await zhu._approve(zhuExchange.address, amount);
+    await zhuExchange.short(amount, 200);
+    await zhuExchange.executeTrades(800);
+
+    let balanceAfter = ethers.utils.formatEther(
+      await zhu.balanceOf(deployer.address)
+    );
+
+    assert.equal(Number(balanceAfter), Number(balanceBefore) - amount);
+  });
+
+  it(`Should have longed and won`, async () => {
+    let balanceBefore = ethers.utils.formatEther(
+      await zhu.balanceOf(deployer.address)
+    );
+
+    await zhu._approve(zhuExchange.address, amount);
+    await zhuExchange.long(amount, 789);
+    await zhuExchange.executeTrades(819);
+
+    let balanceAfter = ethers.utils.formatEther(
+      await zhu.balanceOf(deployer.address)
+    );
+
+    assert.isAbove(Number(balanceAfter), Number(balanceBefore));
+  });
+
+  it(`Should have longed and lost`, async () => {
+    let balanceBefore = ethers.utils.formatEther(
+      await zhu.balanceOf(deployer.address)
+    );
+
+    await zhu._approve(zhuExchange.address, amount);
+    await zhuExchange.long(amount, 819);
+    await zhuExchange.executeTrades(789);
+
+    let balanceAfter = ethers.utils.formatEther(
+      await zhu.balanceOf(deployer.address)
+    );
+
+    assert.isBelow(Number(balanceAfter), Number(balanceBefore));
+  });
+
+  it(`Should have longed and lost everything`, async () => {
+    let balanceBefore = ethers.utils.formatEther(
+      await zhu.balanceOf(deployer.address)
+    );
+
+    await zhu._approve(zhuExchange.address, amount);
+    await zhuExchange.long(amount, 800);
+    await zhuExchange.executeTrades(200);
+
+    let balanceAfter = ethers.utils.formatEther(
+      await zhu.balanceOf(deployer.address)
+    );
+
+    assert.equal(Number(balanceAfter), Number(balanceBefore) - amount);
   });
 });
