@@ -15,7 +15,7 @@ const deployExchange: DeployFunction = async function (
     args: [zhu.address],
     log: true,
   });
-  log(`Zhu Exchange deployed at ${ZhuExchange.address}`);
+  await zhu.grantMinterRole(ZhuExchange.address);
 };
 
 export default deployExchange;

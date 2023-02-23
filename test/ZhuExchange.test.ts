@@ -121,4 +121,15 @@ describe("ZHU Exchange", function () {
 
     assert.equal(Number(balanceAfter), Number(balanceBefore) - amount);
   });
+
+  it("Should have executed trades and emitted an event", async () => {
+    await zhu._approve(zhuExchange.address, amount);
+    await zhuExchange.long(amount, 800);
+    await zhu._approve(zhuExchange.address, amount);
+    await zhuExchange.short(amount, 800);
+    await expect(zhuExchange.executeTrades(400)).to.emit(
+      zhuExchange,
+      "TradesExecuted"
+    );
+  });
 });

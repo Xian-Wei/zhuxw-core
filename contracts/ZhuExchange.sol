@@ -26,6 +26,7 @@ interface ZhuInterface is IERC20 {
 }
 
 contract ZhuExchange {
+    /* Type declarations */
     enum PositionType {
         SHORT,
         LONG
@@ -37,9 +38,13 @@ contract ZhuExchange {
         uint16 weightSnapshot;
     }
 
+    /* State variables */
     ZhuInterface i_zhuContract;
     address payable[] private s_users;
     mapping(address => Position[]) public s_positions;
+
+    /* Events */
+    event TradesExecuted();
 
     constructor(address zhuContractAddress) {
         i_zhuContract = ZhuInterface(zhuContractAddress);
@@ -100,7 +105,6 @@ contract ZhuExchange {
                     ((int256(finalWeight) - weightSnapshot) * 10000) /
                         weightSnapshot
                 );
-
                 int256 gainLoss = ((amount) * percentageDifference) / 1000;
 
                 if (
@@ -124,7 +128,10 @@ contract ZhuExchange {
                     }
                 }
             }
+            delete s_positions[s_users[i]];
         }
+        delete s_users;
+        emit TradesExecuted();
     }
 
     function getUsers() public view returns (address payable[] memory) {

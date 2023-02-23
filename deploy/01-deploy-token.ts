@@ -9,12 +9,11 @@ const deployToken: DeployFunction = async function (
   const { deploy, log } = deployments;
   const { deployer } = await getNamedAccounts();
 
-  const zhuToken = await deploy("Zhu", {
+  await deploy("Zhu", {
     from: deployer,
     args: [INITIAL_SUPPLY, FAUCET_AMOUNT],
     log: true,
   });
-  log(`Zhu Token deployed at ${zhuToken.address}`);
 };
 
 export default deployToken;

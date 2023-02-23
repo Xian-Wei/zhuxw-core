@@ -38,20 +38,30 @@ const updateUI: DeployFunction = async function (
 
     if (fs.existsSync("./artifacts")) {
       if (fs.existsSync("./artifacts/contracts/Zhu.sol")) {
-        fs.copyFile(
-          "./artifacts/contracts/Zhu.sol/Zhu.json",
+        const json = JSON.parse(
+          await fs.readFileSync(
+            "./artifacts/contracts/Zhu.sol/Zhu.json",
+            "utf8"
+          )
+        );
+        fs.writeFileSync(
           `${frontEndAbiFolder}/Zhu.json`,
-          () => {}
+          JSON.stringify(json.abi)
         );
         console.log(
           "Zhu contract ABI has successfully been copied to destination"
         );
       }
       if (fs.existsSync("./artifacts/contracts/Zhu.sol")) {
-        fs.copyFile(
-          "./artifacts/contracts/ZhuExchange.sol/ZhuExchange.json",
+        const json = JSON.parse(
+          await fs.readFileSync(
+            "./artifacts/contracts/ZhuExchange.sol/ZhuExchange.json",
+            "utf8"
+          )
+        );
+        fs.writeFileSync(
           `${frontEndAbiFolder}/ZhuExchange.json`,
-          () => {}
+          JSON.stringify(json.abi)
         );
         console.log(
           "Zhu Exchange contract ABI has successfully been copied to destination"
@@ -61,5 +71,6 @@ const updateUI: DeployFunction = async function (
     console.log("Front end written!");
   }
 };
+
 export default updateUI;
 updateUI.tags = ["all", "frontend"];
