@@ -44,6 +44,7 @@ contract ZhuExchange {
     mapping(address => Position[]) public s_positions;
 
     /* Events */
+    event PositionAdded();
     event TradesExecuted();
 
     constructor(address zhuContractAddress) {
@@ -70,6 +71,7 @@ contract ZhuExchange {
                 weightSnapshot: weight
             })
         );
+        emit PositionAdded();
     }
 
     function long(uint256 amount, uint16 weight) public {
@@ -92,6 +94,7 @@ contract ZhuExchange {
                 weightSnapshot: weight
             })
         );
+        emit PositionAdded();
     }
 
     function executeTrades(uint256 finalWeight) public {
@@ -105,7 +108,7 @@ contract ZhuExchange {
                     ((int256(finalWeight) - weightSnapshot) * 10000) /
                         weightSnapshot
                 );
-                int256 gainLoss = ((amount) * percentageDifference) / 1000;
+                int256 gainLoss = ((amount) * percentageDifference) / 500;
 
                 if (
                     s_positions[s_users[i]][j].positionType ==
