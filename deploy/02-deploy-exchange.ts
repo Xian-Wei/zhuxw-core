@@ -1,21 +1,31 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
+import { developmentChains } from "../helper-hardhat-config";
+import verify from "../utils/verify";
 
 const deployExchange: DeployFunction = async function (
   hre: HardhatRuntimeEnvironment
 ) {
-  const { getNamedAccounts, deployments, ethers } = hre;
+  const { getNamedAccounts, deployments, network, ethers } = hre;
   const { deploy, log } = deployments;
   const { deployer } = await getNamedAccounts();
 
   const zhu = await ethers.getContract("Zhu");
 
-  const ZhuExchange = await deploy("ZhuExchange", {
+  const zhuExchange = await deploy("ZhuExchange", {
     from: deployer,
     args: [zhu.address],
     log: true,
   });
-  await zhu.grantMinterRole(ZhuExchange.address);
+  await zhu.grantMinterRole(zhuExchange.address);
+
+  if (
+    !developmentChains.includes(network.name) &&
+    process.env.ETHERSCAN_API_KEY
+  ) {
+    log("Verifying...");
+    await verify(zhu.address, [zhu.address]);
+  }
 };
 
 export default deployExchange;
