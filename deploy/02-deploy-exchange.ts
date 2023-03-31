@@ -24,8 +24,9 @@ const deployExchange: DeployFunction = async function (
     process.env.ETHERSCAN_API_KEY
   ) {
     log("Verifying...");
-    await verify(zhu.address, [zhu.address]);
+    await verify(zhuExchange.address, [zhu.address]);
   }
+  log("----------------------------------");
 };
 
 export default deployExchange;

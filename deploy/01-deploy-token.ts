@@ -28,6 +28,7 @@ const deployToken: DeployFunction = async function (
     log("Verifying...");
     await verify(zhu.address, args);
   }
+  log("----------------------------------");
 };
 
 export default deployToken;

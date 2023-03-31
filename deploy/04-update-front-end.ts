@@ -21,6 +21,7 @@ const updateFrontEnd: DeployFunction = async function (
 async function updateContractAddresses() {
   const zhu = await ethers.getContract("Zhu");
   const zhuExchange = await ethers.getContract("ZhuExchange");
+  const zhuba = await ethers.getContract("Zhuba");
   const chainId = network.config.chainId!.toString();
 
   if (!fs.existsSync(frontEndContractsFile)) {
@@ -41,10 +42,15 @@ async function updateContractAddresses() {
     ) {
       contractAddresses[chainId]["ZhuExchange"].push(zhuExchange.address);
     }
+
+    if (!contractAddresses[chainId]["Zhuba"].includes(zhuba.address)) {
+      contractAddresses[chainId]["Zhuba"].push(zhuba.address);
+    }
   } else {
     contractAddresses[chainId] = {
       Zhu: [zhu.address],
       ZhuExchange: [zhuExchange.address],
+      Zhuba: [zhuba.address],
     };
   }
 
@@ -65,6 +71,7 @@ async function updateAbi() {
         "Zhu contract ABI has successfully been copied to destination"
       );
     }
+
     if (fs.existsSync("./artifacts/contracts/ZhuExchange.sol")) {
       const json = JSON.parse(
         await fs.readFileSync(
@@ -78,6 +85,22 @@ async function updateAbi() {
       );
       console.log(
         "Zhu Exchange contract ABI has successfully been copied to destination"
+      );
+    }
+
+    if (fs.existsSync("./artifacts/contracts/Zhuba.sol")) {
+      const json = JSON.parse(
+        await fs.readFileSync(
+          "./artifacts/contracts/Zhuba.sol/Zhuba.json",
+          "utf8"
+        )
+      );
+      fs.writeFileSync(
+        `${frontEndAbiFolder}/Zhuba.json`,
+        JSON.stringify(json.abi)
+      );
+      console.log(
+        "Zhuba contract ABI has successfully been copied to destination"
       );
     }
   }

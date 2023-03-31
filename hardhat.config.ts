@@ -9,6 +9,7 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const MAINNET_RPC_URL = process.env.MAINNET_RPC_URL;
 const POLYGON_MAINNET_RPC_URL = process.env.GOERLI_RPC_URL;
 const GOERLI_RPC_URL = process.env.GOERLI_RPC_URL;
+const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL;
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "";
 
 const config: HardhatUserConfig = {
@@ -40,6 +41,12 @@ const config: HardhatUserConfig = {
       accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
       saveDeployments: true,
       chainId: 5,
+    },
+    sepolia: {
+      url: SEPOLIA_RPC_URL,
+      accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
+      saveDeployments: true,
+      chainId: 11155111,
     },
   },
   namedAccounts: {
