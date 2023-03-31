@@ -29,7 +29,16 @@ export const networkConfig: networkConfigInfo = {
       "0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c",
     callbackGasLimit: "500000", // 500,000 gas
     mintFee: "1000000000000000", // 0.001 ETH
-    subscriptionId: "850", // add your ID here!
+    subscriptionId: "850",
+  },
+  80001: {
+    name: "mumbai",
+    vrfCoordinatorV2: "0x7a1BaC17Ccc5b313516C5E16fb24f7659aA5ebed",
+    gasLane:
+      "0x4b09e658ed251bcafeebbc69400383d49f344ace09b9576fe248bb02c003fe9f", // 500 gwei
+    callbackGasLimit: "500000", // 500,000 gas
+    mintFee: "1000000000000000", // 0.001 MATIC
+    subscriptionId: "3933",
   },
 };
 

@@ -10,7 +10,9 @@ const MAINNET_RPC_URL = process.env.MAINNET_RPC_URL;
 const POLYGON_MAINNET_RPC_URL = process.env.GOERLI_RPC_URL;
 const GOERLI_RPC_URL = process.env.GOERLI_RPC_URL;
 const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL;
+const MUMBAI_RPC_URL = process.env.MUMBAI_RPC_URL;
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "";
+const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY || "";
 
 const config: HardhatUserConfig = {
   solidity: "0.8.17",
@@ -48,6 +50,12 @@ const config: HardhatUserConfig = {
       saveDeployments: true,
       chainId: 11155111,
     },
+    mumbai: {
+      url: MUMBAI_RPC_URL,
+      accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
+      saveDeployments: true,
+      chainId: 80001,
+    },
   },
   namedAccounts: {
     deployer: {
@@ -56,7 +64,7 @@ const config: HardhatUserConfig = {
     },
   },
   etherscan: {
-    apiKey: ETHERSCAN_API_KEY,
+    apiKey: { sepolia: ETHERSCAN_API_KEY, polygonMumbai: POLYGONSCAN_API_KEY },
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS == "true" ? true : false,

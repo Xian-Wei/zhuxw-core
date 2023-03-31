@@ -11,11 +11,11 @@ const FUND_AMOUNT = "1000000000000000000000";
 1;
 
 let tokenUris = [
-  "ipfs://QmZYGS1SPxUqSg6uFetAydRzWvkXEP9shFGM75MPr2LXsw",
-  "ipfs://QmNnVfkG8Qqecs9ELk3S1aEvy3c4ft5fqT9RTkUvseSviE",
-  "ipfs://QmVUh9QL6U4Bz2AEPT8wgVvgPSkqVpB1FagP9YocqyK9Ue",
-  "ipfs://Qmb1DhA2ahxUADeBjy68YHSxBRVKLVFsZSyePRUAfATnvu",
   "ipfs://QmUSPewEVu9Wkc7rY2vRkHhF5GrhXKGAASRYY84faHAWdu",
+  "ipfs://Qmb1DhA2ahxUADeBjy68YHSxBRVKLVFsZSyePRUAfATnvu",
+  "ipfs://QmVUh9QL6U4Bz2AEPT8wgVvgPSkqVpB1FagP9YocqyK9Ue",
+  "ipfs://QmNnVfkG8Qqecs9ELk3S1aEvy3c4ft5fqT9RTkUvseSviE",
+  "ipfs://QmZYGS1SPxUqSg6uFetAydRzWvkXEP9shFGM75MPr2LXsw",
 ];
 
 const deployNft: DeployFunction = async function (
