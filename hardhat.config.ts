@@ -11,6 +11,7 @@ const POLYGON_MAINNET_RPC_URL = process.env.GOERLI_RPC_URL;
 const GOERLI_RPC_URL = process.env.GOERLI_RPC_URL;
 const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL;
 const MUMBAI_RPC_URL = process.env.MUMBAI_RPC_URL;
+const ARBITRUM_RPC_URL = process.env.ARBITRUM_RPC_URL;
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "";
 const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY || "";
 
@@ -56,6 +57,11 @@ const config: HardhatUserConfig = {
       saveDeployments: true,
       chainId: 80001,
     },
+    arbitrumOne: {
+      url: ARBITRUM_RPC_URL,
+      accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
+      saveDeployments: true,
+    },
   },
   namedAccounts: {
     deployer: {
@@ -68,6 +74,12 @@ const config: HardhatUserConfig = {
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS == "true" ? true : false,
+    // token: "eth",
+    // gasPriceApi:
+    //   "https://api.etherscan.io/api?module=proxy&action=eth_gasPrice",
+    token: "matic",
+    gasPriceApi:
+      "https://api.polygonscan.com/api?module=proxy&action=eth_gasPrice",
   },
 };
 
