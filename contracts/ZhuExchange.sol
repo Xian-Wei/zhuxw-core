@@ -5,7 +5,7 @@ import "./Zhu.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /* Errors */
-error ZhuExchange__NotEnoughBalance();
+error ZhuExchange__NotEnoughAllowance();
 
 interface ZhuInterface is IERC20 {
     function faucet() external;
@@ -33,6 +33,7 @@ contract ZhuExchange {
     }
 
     struct Position {
+        uint256 id;
         PositionType positionType;
         uint256 amount;
         uint16 weightSnapshot;
@@ -54,18 +55,19 @@ contract ZhuExchange {
     function short(uint256 amount, uint16 weight) public {
         if (
             i_zhuContract.allowance(msg.sender, address(this)) <
-            amount * (10**18)
+            amount * (10 ** 18)
         ) {
-            revert ZhuExchange__NotEnoughBalance();
+            revert ZhuExchange__NotEnoughAllowance();
         }
         i_zhuContract.transferFrom(
             msg.sender,
             address(this),
-            amount * (10**18)
+            amount * (10 ** 18)
         );
         s_users.push(payable(msg.sender));
         s_positions[msg.sender].push(
             Position({
+                id: s_positions[msg.sender].length,
                 positionType: PositionType.SHORT,
                 amount: amount,
                 weightSnapshot: weight
@@ -77,24 +79,56 @@ contract ZhuExchange {
     function long(uint256 amount, uint16 weight) public {
         if (
             i_zhuContract.allowance(msg.sender, address(this)) <
-            amount * (10**18)
+            amount * (10 ** 18)
         ) {
-            revert ZhuExchange__NotEnoughBalance();
+            revert ZhuExchange__NotEnoughAllowance();
         }
         i_zhuContract.transferFrom(
             msg.sender,
             address(this),
-            amount * (10**18)
+            amount * (10 ** 18)
         );
         s_users.push(payable(msg.sender));
         s_positions[msg.sender].push(
             Position({
+                id: s_positions[msg.sender].length,
                 positionType: PositionType.LONG,
                 amount: amount,
                 weightSnapshot: weight
             })
         );
         emit PositionAdded();
+    }
+
+    function closeTrade(uint256 finalWeight, uint256 id) public {
+        int256 amount = int256(s_positions[msg.sender][id].amount);
+        int256 weightSnapshot = int16(
+            s_positions[msg.sender][id].weightSnapshot
+        );
+        int256 percentageDifference = int256(
+            ((int256(finalWeight) - weightSnapshot) * 10000) / weightSnapshot
+        );
+        int256 gainLoss = ((amount) * percentageDifference) / 500;
+
+        if (s_positions[msg.sender][id].positionType == PositionType.SHORT) {
+            if (gainLoss < amount) {
+                i_zhuContract.mintTokenTo(
+                    msg.sender,
+                    uint256(amount - gainLoss) * (10 ** 18)
+                );
+            }
+        } else if (
+            s_positions[msg.sender][id].positionType == PositionType.LONG
+        ) {
+            if (-gainLoss < amount) {
+                i_zhuContract.mintTokenTo(
+                    msg.sender,
+                    uint256(amount + gainLoss) * (10 ** 18)
+                );
+            }
+        }
+        delete s_positions[msg.sender][id];
+        emit TradesExecuted();
     }
 
     function executeTrades(uint256 finalWeight) public {
@@ -117,7 +151,7 @@ contract ZhuExchange {
                     if (gainLoss < amount) {
                         i_zhuContract.mintTokenTo(
                             s_users[i],
-                            uint256(amount - gainLoss) * (10**18)
+                            uint256(amount - gainLoss) * (10 ** 18)
                         );
                     }
                 } else if (
@@ -126,7 +160,7 @@ contract ZhuExchange {
                     if (-gainLoss < amount) {
                         i_zhuContract.mintTokenTo(
                             s_users[i],
-                            uint256(amount + gainLoss) * (10**18)
+                            uint256(amount + gainLoss) * (10 ** 18)
                         );
                     }
                 }
@@ -145,11 +179,9 @@ contract ZhuExchange {
         return s_positions[msg.sender];
     }
 
-    function getPositionsOf(address _address)
-        public
-        view
-        returns (Position[] memory)
-    {
+    function getPositionsOf(
+        address _address
+    ) public view returns (Position[] memory) {
         return s_positions[_address];
     }
 }
