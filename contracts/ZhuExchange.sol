@@ -33,7 +33,7 @@ contract ZhuExchange {
     }
 
     struct Position {
-        uint256 id;
+        uint32 id;
         PositionType positionType;
         uint256 amount;
         uint16 weightSnapshot;
@@ -67,7 +67,7 @@ contract ZhuExchange {
         s_users.push(payable(msg.sender));
         s_positions[msg.sender].push(
             Position({
-                id: s_positions[msg.sender].length,
+                id: uint32(s_positions[msg.sender].length),
                 positionType: PositionType.SHORT,
                 amount: amount,
                 weightSnapshot: weight
@@ -91,7 +91,7 @@ contract ZhuExchange {
         s_users.push(payable(msg.sender));
         s_positions[msg.sender].push(
             Position({
-                id: s_positions[msg.sender].length,
+                id: uint32(s_positions[msg.sender].length),
                 positionType: PositionType.LONG,
                 amount: amount,
                 weightSnapshot: weight
