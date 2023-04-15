@@ -8,7 +8,6 @@ import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 const FUND_AMOUNT = "1000000000000000000000";
-1;
 
 let tokenUris = [
   "ipfs://QmUSPewEVu9Wkc7rY2vRkHhF5GrhXKGAASRYY84faHAWdu",
@@ -25,13 +24,12 @@ const deployNft: DeployFunction = async function (
   const { deploy, log } = deployments;
   const { deployer } = await getNamedAccounts();
   const chainId = network.config.chainId!;
-  let vrfCoordinatorV2Address, subscriptionId;
+  let vrfCoordinatorV2Address, subscriptionId, vrfCoordinatorV2Mock;
+  const zhu = await ethers.getContract("Zhu");
 
   if (chainId == 31337) {
     // create VRFV2 Subscription
-    const vrfCoordinatorV2Mock = await ethers.getContract(
-      "VRFCoordinatorV2Mock"
-    );
+    vrfCoordinatorV2Mock = await ethers.getContract("VRFCoordinatorV2Mock");
     vrfCoordinatorV2Address = vrfCoordinatorV2Mock.address;
     const transactionResponse = await vrfCoordinatorV2Mock.createSubscription();
     const transactionReceipt = await transactionResponse.wait();
@@ -55,6 +53,7 @@ const deployNft: DeployFunction = async function (
     networkConfig[chainId]["mintFee"],
     networkConfig[chainId]["callbackGasLimit"],
     tokenUris,
+    zhu.address,
   ];
   const zhuba = await deploy("Zhuba", {
     from: deployer,
@@ -62,6 +61,10 @@ const deployNft: DeployFunction = async function (
     log: true,
     waitConfirmations: waitBlockConfirmations || 1,
   });
+
+  if (chainId == 31337) {
+    await vrfCoordinatorV2Mock?.addConsumer(subscriptionId, zhuba.address);
+  }
 
   // Verify the deployment
   if (

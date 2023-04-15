@@ -19,7 +19,7 @@ export const networkConfig: networkConfigInfo = {
     name: "localhost",
     gasLane:
       "0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc", // 30 gwei
-    mintFee: "1000000000000000", // 0.001 ETH
+    mintFee: "10000",
     callbackGasLimit: "500000", // 500,000 gas
   },
   11155111: {
@@ -28,7 +28,7 @@ export const networkConfig: networkConfigInfo = {
     gasLane:
       "0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c",
     callbackGasLimit: "500000", // 500,000 gas
-    mintFee: "1000000000000000", // 0.001 ETH
+    mintFee: "10000",
     subscriptionId: "850",
   },
   80001: {
@@ -37,8 +37,8 @@ export const networkConfig: networkConfigInfo = {
     gasLane:
       "0x4b09e658ed251bcafeebbc69400383d49f344ace09b9576fe248bb02c003fe9f", // 500 gwei
     callbackGasLimit: "500000", // 500,000 gas
-    mintFee: "1000000000000000", // 0.001 MATIC
-    subscriptionId: "3933",
+    mintFee: "10000",
+    subscriptionId: "4282",
   },
 };
 

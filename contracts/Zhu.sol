@@ -19,10 +19,11 @@ contract Zhu is ERC20, AccessControl {
     mapping(address => uint16) private faucetUseCount;
     mapping(address => uint256) private lockTime;
 
-    constructor(uint256 initialSupply, uint256 _faucetAmount)
-        ERC20("Zhu", "ZHU")
-    {
-        _mint(msg.sender, initialSupply * (10**decimals()));
+    constructor(
+        uint256 initialSupply,
+        uint256 _faucetAmount
+    ) ERC20("Zhu", "ZHU") {
+        _mint(msg.sender, initialSupply * (10 ** decimals()));
         faucetAmount = _faucetAmount;
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
@@ -39,13 +40,13 @@ contract Zhu is ERC20, AccessControl {
             revert Zhu__LockTimeNotReached();
         }
 
-        _mint(msg.sender, faucetAmount * (10**18));
+        _mint(msg.sender, faucetAmount * (10 ** 18));
         faucetUseCount[msg.sender] = faucetUseCount[msg.sender] + 1;
         lockTime[msg.sender] = block.timestamp + 5 minutes;
     }
 
     function _approve(address spender, uint256 amount) external returns (bool) {
-        bool approved = approve(spender, amount * (10**decimals()));
+        bool approved = approve(spender, amount * (10 ** decimals()));
 
         return approved;
     }

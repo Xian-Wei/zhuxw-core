@@ -1,16 +1,20 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "hardhat/console.sol";
+import "./Zhu.sol";
 
 error Zhuba__AlreadyInitialized();
-error Zhuba__NeedMoreETHSent();
+error Zhuba__NotEnoughAllowance();
 error Zhuba__RangeOutOfBounds();
 error Zhuba__TransferFailed();
+
+interface ZhuInterface is IERC20 {}
 
 contract Zhuba is ERC721URIStorage, VRFConsumerBaseV2, Ownable {
     // Types
@@ -37,6 +41,9 @@ contract Zhuba is ERC721URIStorage, VRFConsumerBaseV2, Ownable {
     string[] internal s_zhubaTokenUris;
     bool private s_initialized;
 
+    // State variables
+    ZhuInterface i_zhuContract;
+
     // VRF Helpers
     mapping(uint256 => address) public s_requestIdToSender;
 
@@ -50,7 +57,8 @@ contract Zhuba is ERC721URIStorage, VRFConsumerBaseV2, Ownable {
         bytes32 gasLane, // keyHash
         uint256 mintFee,
         uint32 callbackGasLimit,
-        string[5] memory zhubaTokenUris
+        string[5] memory zhubaTokenUris,
+        address zhuAddress
     ) VRFConsumerBaseV2(vrfCoordinatorV2) ERC721("Zhuba", "ZHUBA") {
         i_vrfCoordinator = VRFCoordinatorV2Interface(vrfCoordinatorV2);
         i_gasLane = gasLane;
@@ -59,12 +67,22 @@ contract Zhuba is ERC721URIStorage, VRFConsumerBaseV2, Ownable {
         i_callbackGasLimit = callbackGasLimit;
         _initializeContract(zhubaTokenUris);
         s_tokenCounter = 0;
+        i_zhuContract = ZhuInterface(zhuAddress);
     }
 
-    function requestNft() public payable returns (uint256 requestId) {
-        if (msg.value < i_mintFee) {
-            revert Zhuba__NeedMoreETHSent();
+    function requestNft() public returns (uint256 requestId) {
+        if (
+            i_zhuContract.allowance(msg.sender, address(this)) <
+            i_mintFee * (10 ** 18)
+        ) {
+            revert Zhuba__NotEnoughAllowance();
         }
+        i_zhuContract.transferFrom(
+            msg.sender,
+            address(this),
+            i_mintFee * (10 ** 18)
+        );
+
         requestId = i_vrfCoordinator.requestRandomWords(
             i_gasLane,
             i_subscriptionId,
@@ -123,8 +141,9 @@ contract Zhuba is ERC721URIStorage, VRFConsumerBaseV2, Ownable {
     }
 
     function withdraw() public onlyOwner {
-        uint256 amount = address(this).balance;
-        (bool success, ) = payable(msg.sender).call{value: amount}("");
+        uint256 balance = i_zhuContract.balanceOf(address(this));
+
+        bool success = i_zhuContract.transfer(msg.sender, balance);
         if (!success) {
             revert Zhuba__TransferFailed();
         }
