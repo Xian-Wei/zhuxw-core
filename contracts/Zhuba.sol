@@ -77,11 +77,6 @@ contract Zhuba is ERC721URIStorage, VRFConsumerBaseV2, Ownable {
         ) {
             revert Zhuba__NotEnoughAllowance();
         }
-        i_zhuContract.transferFrom(
-            msg.sender,
-            address(this),
-            i_mintFee * (10 ** 18)
-        );
 
         requestId = i_vrfCoordinator.requestRandomWords(
             i_gasLane,
@@ -92,7 +87,15 @@ contract Zhuba is ERC721URIStorage, VRFConsumerBaseV2, Ownable {
         );
 
         s_requestIdToSender[requestId] = msg.sender;
+
+        // Somehow putting this after transferFrom breaks everything (something to do with requestId not being emitted)
         emit NftRequested(requestId, msg.sender);
+
+        i_zhuContract.transferFrom(
+            msg.sender,
+            address(this),
+            i_mintFee * (10 ** 18)
+        );
     }
 
     function fulfillRandomWords(
@@ -165,5 +168,9 @@ contract Zhuba is ERC721URIStorage, VRFConsumerBaseV2, Ownable {
 
     function getTokenCounter() public view returns (uint256) {
         return s_tokenCounter;
+    }
+
+    function getZhuContractAddress() public view returns (address) {
+        return address(i_zhuContract);
     }
 }
