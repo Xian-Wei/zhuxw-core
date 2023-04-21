@@ -10,11 +10,11 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 const FUND_AMOUNT = "1000000000000000000000";
 
 let tokenUris = [
-  "ipfs://QmUSPewEVu9Wkc7rY2vRkHhF5GrhXKGAASRYY84faHAWdu",
-  "ipfs://Qmb1DhA2ahxUADeBjy68YHSxBRVKLVFsZSyePRUAfATnvu",
-  "ipfs://QmVUh9QL6U4Bz2AEPT8wgVvgPSkqVpB1FagP9YocqyK9Ue",
-  "ipfs://QmNnVfkG8Qqecs9ELk3S1aEvy3c4ft5fqT9RTkUvseSviE",
-  "ipfs://QmZYGS1SPxUqSg6uFetAydRzWvkXEP9shFGM75MPr2LXsw",
+  "ipfs://QmdRyJpvy8UKPct3gzpXuu7Gp884xjbYZ1H8CbAgGqCUyU",
+  "ipfs://QmPk3tVrbSvmT7uxjGk2j2zqggFVPu5tcwSs3fQyqgoDLd",
+  "ipfs://QmYUSqhLYB7LDJJeF8pnehDyJh9avNHf9hu7kY7zDUkrgC",
+  "ipfs://QmT7SGDiSVmmd5A1VrMnMcF47GwKBfhoHxpkG9dS7Eqzjn",
+  "ipfs://QmQEcqCezouB8X89vfFmvPgoNzDgNeZJpfhPx3Y4AnKN6M",
 ];
 
 const deployNft: DeployFunction = async function (

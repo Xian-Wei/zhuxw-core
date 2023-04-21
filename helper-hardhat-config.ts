@@ -38,7 +38,7 @@ export const networkConfig: networkConfigInfo = {
       "0x4b09e658ed251bcafeebbc69400383d49f344ace09b9576fe248bb02c003fe9f", // 500 gwei
     callbackGasLimit: "500000", // 500,000 gas
     mintFee: "10000",
-    subscriptionId: "4282",
+    subscriptionId: "4367",
   },
 };
 
