@@ -6,12 +6,12 @@ import "@nomiclabs/hardhat-ethers";
 import "hardhat-gas-reporter";
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
-const MAINNET_RPC_URL = process.env.MAINNET_RPC_URL;
-const POLYGON_MAINNET_RPC_URL = process.env.GOERLI_RPC_URL;
-const GOERLI_RPC_URL = process.env.GOERLI_RPC_URL;
-const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL;
-const MUMBAI_RPC_URL = process.env.MUMBAI_RPC_URL;
-const ARBITRUM_RPC_URL = process.env.ARBITRUM_RPC_URL;
+const MAINNET_RPC_URL = process.env.MAINNET_RPC_URL || "";
+const POLYGON_MAINNET_RPC_URL = process.env.GOERLI_RPC_URL || "";
+const GOERLI_RPC_URL = process.env.GOERLI_RPC_URL || "";
+const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL || "";
+const MUMBAI_RPC_URL = process.env.MUMBAI_RPC_URL || "";
+const ARBITRUM_RPC_URL = process.env.ARBITRUM_RPC_URL || "";
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "";
 const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY || "";
 
