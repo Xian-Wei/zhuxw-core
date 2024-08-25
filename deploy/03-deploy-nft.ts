@@ -21,22 +21,23 @@ const deployNft: DeployFunction = async function (
   hre: HardhatRuntimeEnvironment
 ) {
   const { deployments, getNamedAccounts, network, ethers } = hre;
-  const { deploy, log } = deployments;
+  const { deploy, log, get } = deployments;
   const { deployer } = await getNamedAccounts();
   const chainId = network.config.chainId!;
   let vrfCoordinatorV2Address, subscriptionId, vrfCoordinatorV2Mock;
-  const zhu = await ethers.getContract("Zhu");
+  const zhu = await get("Zhu"); 
 
   if (chainId == 31337) {
     // create VRFV2 Subscription
-    vrfCoordinatorV2Mock = await ethers.getContract("VRFCoordinatorV2Mock");
+    const vrfCoordinatorV2Mock = await get("VRFCoordinatorV2Mock"); 
+    const vrfCoordinatorV2MockContract = await ethers.getContractAt("VRFCoordinatorV2Mock", vrfCoordinatorV2Mock.address);
     vrfCoordinatorV2Address = vrfCoordinatorV2Mock.address;
-    const transactionResponse = await vrfCoordinatorV2Mock.createSubscription();
+    const transactionResponse = await vrfCoordinatorV2MockContract.createSubscription();
     const transactionReceipt = await transactionResponse.wait();
     subscriptionId = transactionReceipt.events[0].args.subId;
     // Fund the subscription
     // Our mock makes it so we don't actually have to worry about sending fund
-    await vrfCoordinatorV2Mock.fundSubscription(subscriptionId, FUND_AMOUNT);
+    await vrfCoordinatorV2MockContract.fundSubscription(subscriptionId, FUND_AMOUNT);
   } else {
     vrfCoordinatorV2Address = networkConfig[chainId].vrfCoordinatorV2;
     subscriptionId = networkConfig[chainId].subscriptionId;

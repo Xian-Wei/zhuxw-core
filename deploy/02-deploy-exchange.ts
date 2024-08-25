@@ -7,18 +7,23 @@ const deployExchange: DeployFunction = async function (
   hre: HardhatRuntimeEnvironment
 ) {
   const { getNamedAccounts, deployments, network, ethers } = hre;
-  const { deploy, log } = deployments;
+  const { deploy, log, get } = deployments; // Added get method from deployments
   const { deployer } = await getNamedAccounts();
 
-  const zhu = await ethers.getContract("Zhu");
+  // Fetch the deployed Zhu contract
+  const zhu = await get("Zhu"); // Get the contract deployment using hardhat-deploy
+  const zhuContract = await ethers.getContractAt("Zhu", zhu.address); // Get contract instance using ethers
 
   const zhuExchange = await deploy("ZhuExchange", {
     from: deployer,
     args: [zhu.address],
     log: true,
   });
-  await zhu.grantMinterRole(zhuExchange.address);
 
+  // Grant the Minter Role to ZhuExchange contract
+  await zhuContract.grantMinterRole(zhuExchange.address);
+
+  // Verify contract if on a live network
   if (
     !developmentChains.includes(network.name) &&
     process.env.ETHERSCAN_API_KEY
