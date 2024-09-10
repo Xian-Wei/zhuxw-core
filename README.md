@@ -1,6 +1,12 @@
 # zhuxw smart contracts
 
-This repository contains the core smart contracts for the ZhuExchange protocol, the ZHU ERC20 token and the Zhuba ERC721 token.
+This repository contains the core smart contracts for the [zhuxw](https://www.zhuxw.com/web3) website.
+
+It includes: 
+- **ZhuExchange Protocol**: A decentralized trading protocol for my weight.
+- **ZHU ERC20 Token**: A fungible token following the ERC20 standard.
+- **Zhuba ERC721 Token**: A non-fungible token (NFT) based on the ERC721 standard.
+
 
 ## Getting Started
 
